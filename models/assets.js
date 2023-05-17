@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const assetSchema = new mongoose.Schema({
-    firmOwner: {
+    firm: {
         type: String,
         required: true
     },

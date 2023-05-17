@@ -9,4 +9,7 @@ router.route('/')
     .patch(usersController.updateUser)
     .delete(usersController.deleteUser)
 
+router.route('/team/:ID')
+    .get(usersController.getTeam)
+
 module.exports = router

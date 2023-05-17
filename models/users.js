@@ -6,9 +6,27 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
+        type: String,
+        required: true
+    },
     password: {
         type: String,
         required: true
+    },
+    firm: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String
+    },
+    active: {
+        type: String
     },
     refreshToken: [String]
 })

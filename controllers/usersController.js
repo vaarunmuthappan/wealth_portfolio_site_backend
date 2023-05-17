@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const User = require('../models/users')
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler')
@@ -25,6 +26,27 @@ const getAllUsers = asyncHandler(async (req, res) => {
 })
 // To test:
 // curl -X GET http://localhost:3000/users/ -H "Content-Type: application/json" -d '{"username":"vkvk"}
+
+// @desc Get all users in same company
+// @route GET /users
+// @access Private
+const getTeam = asyncHandler(async (req, res) => {
+    // Get all users from MongoDB
+    //lean returns without extra data in json
+    const userID = new mongoose.Types.ObjectId(req.params.ID)
+
+    const currentUser = await User.findOne({ _ID: userID })
+    const firm = "KMC"
+    console.log("current user", currentUser);
+    const users = await User.find({ firm }).select('-password').lean()
+
+    // If no users 
+    if (!users?.length) {
+        return res.status(400).json({ message: 'No users found' })
+    }
+
+    res.json(users)
+})
 
 // @desc Create new user
 // @route POST /users
@@ -142,4 +164,5 @@ module.exports = {
     createNewUser,
     updateUser,
     deleteUser,
+    getTeam
 }
