@@ -90,12 +90,39 @@ const getChartItems = asyncHandler(async (req, res) => {
                 $unwind: "$_id"
             }
         ]);
+    let totalL = {
+        "_id": "Liabilities",
+        "sum": 0
+    };
+    let totalA = {
+        "_id": "Assets",
+        "sum": 0
+    };
+    if (totals.length == 1) {
+        if (totals[0]._id == "Liabilities") {
+            totalL = totals[0]
+        }
+        else {
+            totalA = totals[0]
+        }
+    }
+    if (totals.length == 2) {
+        if (totals[0]._id == "Liabilities") {
+            totalL = totals[0]
+            totalA = totals[1]
+        }
+        else {
+            totalL = totals[1]
+            totalA = totals[0]
+        }
+    }
+
 
     res.json({
-        assetCat: assets[0].Categories,
-        liabCat: liabilities[0].Categories,
-        liabTot: totals[1],
-        assetTotal: totals[0]
+        assetCat: assets.length > 0 ? assets[0].Categories : {},
+        liabCat: liabilities.length > 0 ? liabilities[0].Categories : {},
+        liabTot: totalL,
+        assetTotal: totalA
     })
 })
 //curl -X GET http://localhost:3000/users/ -H "Content-Type: application/json" -d '{"username":"vkvk"}
