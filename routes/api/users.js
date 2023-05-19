@@ -4,10 +4,10 @@ const usersController = require('../../controllers/usersController')
 
 router.route('/:id')
     .get(usersController.getUserById)
+    .patch(usersController.updateUser)
 
 router.route('/')
     .post(usersController.createNewUser)
-    .patch(usersController.updateUser)
     .delete(usersController.deleteUser)
 
 router.route('/team/:ID')

@@ -91,34 +91,31 @@ const createNewUser = asyncHandler(async (req, res) => {
 // curl -X POST http://localhost:3000/users/ -H "Content-Type: application/json" -d '{"username":"KKK", "password":"KKK"}'
 
 // @desc Update a user
-// @route PATCH /users
+// @route PATCH /users/:id
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
     // added firm
-    const { id, username, roles, active, password, firm } = req.body
+    const { firstName, lastName, username, roles, active, password, firm, role } = req.body
+    console.log(req.params.id, req.params, req.body)
+    const ID = new mongoose.Types.ObjectId(req.params.id)
 
     // Confirm data 
-    if (!id || !username || !firm || !Array.isArray(roles) || !roles.length || typeof active !== 'boolean') {
-        return res.status(400).json({ message: 'All fields except password are required' })
+    if (!Array.isArray(roles)) {
+        return res.status(400).json({ message: 'Roles must be array.' })
     }
 
     // Does the user exist to update?
-    const user = await User.findById(id).exec()
+    const user = await User.findById(ID).exec()
 
     if (!user) {
         return res.status(400).json({ message: 'User not found' })
     }
 
-    // Check for duplicate 
-    const duplicate = await User.findOne({ username }).lean().exec()
-
-    // Allow updates to the original user 
-    if (duplicate && duplicate?._id.toString() !== id) {
-        return res.status(409).json({ message: 'Duplicate username' })
-    }
-
     user.username = username
+    user.firstName = firstName
+    user.lastName = lastName
     user.roles = roles
+    user.role = role
     user.active = active
     user.firm = firm
 
