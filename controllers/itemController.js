@@ -8,7 +8,7 @@ const asyncHandler = require('express-async-handler')
 // @access Private
 const getChartItems = asyncHandler(async (req, res) => {
     const firmName = req.params.firm;
-    console.log(firmName)
+
     //const currentUser = await User.findOne({ username })
     //const firm = currentUser.firm
     // Get all notes from MongoDB
@@ -100,6 +100,7 @@ const getChartItems = asyncHandler(async (req, res) => {
 })
 //curl -X GET http://localhost:3000/users/ -H "Content-Type: application/json" -d '{"username":"vkvk"}
 
+
 // @desc Get all items by category
 // @route GET /items
 // @access Private
@@ -123,8 +124,6 @@ const getTableItems = asyncHandler(async (req, res) => {
         };
         const sortFormatted = Boolean(sort) ? generateSort() : {};
 
-        console.log(pageSize, firm)
-
         const transactions = await Assets.aggregate([
             {
                 $match: {
@@ -145,16 +144,6 @@ const getTableItems = asyncHandler(async (req, res) => {
             .skip(page * pageSize)
             .limit(Number(pageSize));
 
-        // .find({
-        //     $or: [
-        //         { name: { $regex: new RegExp(search, "i") } },
-        //         { category: { $regex: new RegExp(search, "i") } },
-        //     ],
-        // })
-        //     .sort(sortFormatted)
-        //     .skip(page * pageSize)
-        //     .limit(pageSize);
-        console.log(transactions)
         const total = await Assets.countDocuments({
             name: { $regex: search, $options: "i" },
         });
@@ -168,28 +157,56 @@ const getTableItems = asyncHandler(async (req, res) => {
     }
 })
 
-const getAllItems = asyncHandler(async (req, res) => {
-    const username = req.body.username
-    console.log(username)
-    //const currentUser = await User.findOne({ username })
-    //const firm = currentUser.firm
-    // Get all notes from MongoDB
-    const assets = await Assets.find({ "firmOwner": username }).lean()
+// @desc Get all items by firm, unformatted for dash
+// @route GET /assets/unformatAll/:userID
+// @access Private
+const getDashTableItems = asyncHandler(async (req, res) => {
+    const userID = new mongoose.Types.ObjectId(req.params.userID);
+    const currentUser = await User.findOne({ _id: userID });
 
-    // If no notes 
-    if (!assets?.length) {
-        return res.status(400).json({ message: 'No assets found' })
+    const firm = currentUser.firm;
+
+    const assets = await Assets.aggregate(
+        [
+            {
+                $match: {
+                    "firm": firm
+                }
+            },
+        ]
+    )
+    // // If no notes 
+    // if (!assets?.length) {
+    //     return res.status(400).json({ message: 'No assets found' })
+    // }
+    const employeeCount = await User.aggregate([
+        [
+            {
+                $match: {
+                    "firm": firm
+                }
+            },
+        ]
+    ]
+    )
+    res.json({
+        "totalEmployees": employeeCount.length,
+        "transactions": assets,
+    })
+})
+
+// @desc Get single item
+// @route GET /assets/:id
+// @access Private
+const getSingleItem = asyncHandler(async (req, res) => {
+    const itemID = new mongoose.Types.ObjectId(req.params.id);
+    const item = await Assets.findOne({ _id: itemID }).select('-_id -__v');
+
+    if (!item) {
+        return res.status(400).json({ message: 'No assets found' });
     }
 
-    // Add username to each note before sending the response 
-    // See Promise.all with map() here: https://youtu.be/4lqJBBEpjRE 
-    // You could also do this with a for...of loop
-    // const notesWithUser = await Promise.all(notes.map(async (note) => {
-    //     const user = await User.findById(note.user).lean().exec()
-    //     return { ...note, username: user.username }
-    // }))
-
-    res.json(assets)
+    res.json(item);
 })
 
 // @desc Create new item
@@ -206,6 +223,7 @@ const createNewItems = asyncHandler(async (req, res) => {
     const currency = req.body.currency;
     const quantity = Number(req.body.quantity);
     const date = Date.parse(req.body.date);
+    const soldDate = Date.parse(req.body.date);
     var BStype = "Assets";
     if (category == "Bank Borrowings" || category == "Mortgage") {
         BStype = "Liabilities";
@@ -216,15 +234,8 @@ const createNewItems = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'Some fields are required' })
     }
 
-    // Check for duplicate title
-    // const duplicate = await Note.findOne({ title }).lean().exec()
-    //
-    // if (duplicate) {
-    //     return res.status(409).json({ message: 'Duplicate note title' })
-    // }
-
     // Create and store the new item 
-    const note = await Assets.create({ firm, name, BStype, category, notes, price, curPrice, USDPrice, currency, quantity, date })
+    const note = await Assets.create({ firm, name, BStype, category, notes, price, curPrice, USDPrice, currency, quantity, date, soldDate })
 
     if (note) { // Created 
         return res.status(201).json({ message: 'New item created' })
@@ -271,14 +282,6 @@ const updateItems = asyncHandler(async (req, res) => {
         return res.status(400).json({ "message": 'Item not found' })
     }
 
-    // Check for duplicate title
-    //const duplicate = await Assets.findOne({ title }).lean().exec()
-
-    // // Allow renaming of the original note 
-    // if (duplicate && duplicate?._id.toString() !== id) {
-    //     return res.status(409).json({ message: 'Duplicate note title' })
-    // }
-
     if (req.body?.userOwner) item.userOwner = userOwner
     if (req.body?.name) item.name = req.body.name
     if (req.body?.category) item.category = req.body.category
@@ -317,10 +320,11 @@ const deleteItems = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-    getAllItems,
     createNewItems,
     updateItems,
     deleteItems,
     getChartItems,
     getTableItems,
+    getDashTableItems,
+    getSingleItem,
 }

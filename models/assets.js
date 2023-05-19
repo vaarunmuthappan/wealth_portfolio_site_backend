@@ -32,14 +32,21 @@ const assetSchema = new mongoose.Schema({
         required: true
     },
     currency: {
-        type: String, required: true
+        type: String,
+        required: true
     },
     quantity: {
-        type: Number, required: true
+        type: Number,
+        required: true
     },
     date: {
-        type: Date, required: true
+        type: Date,
+        required: true
     },
+    soldDate: {
+        type: Date,
+        required: true
+    }
 })
 
 module.exports = mongoose.model('asset', assetSchema)

@@ -9,18 +9,11 @@ const bcrypt = require('bcrypt')
 // @desc Get all users in same company
 // @route GET /users
 // @access Private
-const getAllUsers = asyncHandler(async (req, res) => {
+const addNewUser = asyncHandler(async (req, res) => {
     // Get all users from MongoDB
     //lean returns without extra data in json
     const username = req.body.username
     const currentUser = await User.findOne({ username })
-    //const firm = currentUser.firm
-    //const users = await User.find({ firm }).select('-password').lean()
-
-    // If no users 
-    // if (!users?.length) {
-    //     return res.status(400).json({ message: 'No users found' })
-    // }
 
     res.json(currentUser)
 })
@@ -34,10 +27,9 @@ const getTeam = asyncHandler(async (req, res) => {
     // Get all users from MongoDB
     //lean returns without extra data in json
     const userID = new mongoose.Types.ObjectId(req.params.ID)
+    const currentUser = await User.findOne({ _id: userID })
+    const firm = currentUser.firm
 
-    const currentUser = await User.findOne({ _ID: userID })
-    const firm = "KMC"
-    console.log("current user", currentUser);
     const users = await User.find({ firm }).select('-password').lean()
 
     // If no users 
@@ -48,35 +40,47 @@ const getTeam = asyncHandler(async (req, res) => {
     res.json(users)
 })
 
+// @desc Get user by userid
+// @route GET /users/:id
+// @access Private
+const getUserById = asyncHandler(async (req, res) => {
+    // Get all users from MongoDB
+    //lean returns without extra data in json
+    const userID = new mongoose.Types.ObjectId(req.params.id)
+    const currentUser = await User.findOne({ _id: userID }).select('-refreshToken -_id -__v -password');
+
+    // If no users 
+    if (!currentUser) {
+        return res.status(400).json({ message: 'No users found' })
+    }
+
+    res.json(currentUser)
+})
+
 // @desc Create new user
 // @route POST /users
 // @access Private
 const createNewUser = asyncHandler(async (req, res) => {
-    const { username, password } = req.body
-
+    const { username, password, firstName, lastName, firm, role, active } = req.body
     // Confirm data
     if (!username || !password) {
-        return res.status(400).json({ message: 'All fields are required' })
-    }
-
-    // Check for duplicate username
-    const duplicate = await User.findOne({ username }).lean().exec()
-
-    if (duplicate) {
-        return res.status(409).json({ message: 'Duplicate username' })
+        return res.status(400).json({ message: 'Username and Password are required' })
     }
 
     try {
         //encrypt the password
-        const hashedPwd = await bcrypt.hash(pwd, 10);
+        const hashedPwd = await bcrypt.hash(password, 10);
 
         //create and store the new user
         const result = await User.create({
             "username": username,
-            "password": hashedPwd
+            "password": hashedPwd,
+            "firstName": firstName,
+            "lastName": lastName,
+            "firm": firm,
+            "role": role,
+            "active": active
         });
-
-        console.log(result);
 
         res.status(201).json({ 'success': `New user ${username} created!` });
     } catch (err) {
@@ -139,12 +143,6 @@ const deleteUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: 'User ID Required' })
     }
 
-    // Does the user still have assigned notes?
-    // const note = await Note.findOne({ user: id }).lean().exec()
-    // if (note) {
-    //     return res.status(400).json({ message: 'User has assigned notes' })
-    // }
-
     // Does the user exist to delete?
     const user = await User.findById(id).exec()
 
@@ -160,9 +158,10 @@ const deleteUser = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-    getAllUsers,
     createNewUser,
+    addNewUser,
     updateUser,
     deleteUser,
-    getTeam
+    getTeam,
+    getUserById,
 }

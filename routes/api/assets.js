@@ -8,8 +8,13 @@ router.route('/breakdown/:firm')
 router.route('/all/:userID')
     .get(itemController.getTableItems)
 
+router.route('/unformatAll/:userID')
+    .get(itemController.getDashTableItems)
+
+router.route('/:id')
+    .get(itemController.getSingleItem)
+
 router.route('/')
-    .get(itemController.getAllItems)
     .post(itemController.createNewItems)
     .patch(itemController.updateItems)
     .delete(itemController.deleteItems)

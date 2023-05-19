@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const registerController = require('../../controllers/registerController');
 const usersController = require('../../controllers/usersController')
 
+router.route('/:id')
+    .get(usersController.getUserById)
+
 router.route('/')
-    .get(usersController.getAllUsers)
-    .post(registerController.handleNewUser)
+    .post(usersController.createNewUser)
     .patch(usersController.updateUser)
     .delete(usersController.deleteUser)
 

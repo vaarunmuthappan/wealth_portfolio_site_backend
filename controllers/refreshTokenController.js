@@ -49,7 +49,7 @@ const handleRefreshToken = async (req, res) => {
                     }
                 },
                 process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: '3600s' }
+                { expiresIn: '6h' }
             );
 
             const newRefreshToken = jwt.sign(
@@ -64,7 +64,7 @@ const handleRefreshToken = async (req, res) => {
             // Creates Secure Cookie with refresh token
             res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
 
-            res.json({ accessToken })
+            res.json({ accessToken, "firm": foundUser.firm })
         }
     );
 }
