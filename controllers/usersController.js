@@ -96,8 +96,9 @@ const createNewUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
     // added firm
     const { firstName, lastName, username, roles, active, password, firm, role } = req.body
-    console.log(req.params.id, req.params, req.body)
-    const ID = new mongoose.Types.ObjectId(req.params.id)
+
+    const ID = new mongoose.Types.ObjectId(req.body.id)
+
 
     // Confirm data 
     if (!Array.isArray(roles)) {

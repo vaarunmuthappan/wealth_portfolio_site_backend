@@ -13,10 +13,10 @@ router.route('/unformatAll/:userID')
 
 router.route('/:id')
     .get(itemController.getSingleItem)
+    .patch(itemController.updateItems)
 
 router.route('/')
     .post(itemController.createNewItems)
-    .patch(itemController.updateItems)
     .delete(itemController.deleteItems)
 
 module.exports = router

@@ -275,12 +275,9 @@ const createNewItems = asyncHandler(async (req, res) => {
 // curl -X POST http://localhost:3000/items/ -H "Content-Type: application/json" -d '{"firmOwner":"KM Capital","name":"cashdeposit3","category":"cash","notes":"cat","price":100,"currency":"GBP","quantity":100,"date":"2019-05-29T02:22:49.052Z","curPrice":0,"USDPrice":0}'
 
 // @desc Update a item
-// @route PATCH /item
+// @route PATCH /assets/:id
 // @access Private
 const updateItems = asyncHandler(async (req, res) => {
-    if (!req?.body?.id) {
-        return res.status(400).json({ 'message': 'ID parameter is required.' });
-    }
 
     const userOwner = req.body.userOwner;
     const name = req.body.name;
@@ -298,12 +295,12 @@ const updateItems = asyncHandler(async (req, res) => {
     }
 
     // Confirm data
-    if (!category || !name || !currency || !quantity) {
+    if (!category || !name || !currency || !quantity || !price) {
         return res.status(400).json({ 'message': 'All fields are required' })
     }
 
     // Confirm note exists to update
-    const item = await Assets.findOne({ _id: req.body.id }).exec()
+    const item = await Assets.findOne({ _id: req.params.id }).exec()
 
     if (!item) {
         return res.status(400).json({ "message": 'Item not found' })
