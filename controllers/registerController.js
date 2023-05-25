@@ -18,7 +18,7 @@ const handleNewUser = async (req, res) => {
             "username": user,
             "password": hashedPwd,
             "firm": firm,
-            "role": "Admin",
+            "role": "Owner",
             "status": "Active",
             "firstName": firstName,
             "lastName": lastName

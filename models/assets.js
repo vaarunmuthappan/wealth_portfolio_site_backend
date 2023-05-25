@@ -23,10 +23,6 @@ const assetSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    curPrice: {
-        type: Number,
-        required: true
-    },
     USDPrice: {
         type: Number,
         required: true
@@ -37,14 +33,6 @@ const assetSchema = new mongoose.Schema({
     },
     quantity: {
         type: Number,
-        required: true
-    },
-    date: {
-        type: Date,
-        required: true
-    },
-    soldDate: {
-        type: Date,
         required: true
     }
 })

@@ -245,7 +245,6 @@ const createNewItems = asyncHandler(async (req, res) => {
     const category = req.body.category;
     const notes = req.body.notes;
     const price = Number(req.body.price);
-    const curPrice = Number(req.body.curPrice);
     const USDPrice = Number(req.body.USDPrice);
     const currency = req.body.currency;
     const quantity = Number(req.body.quantity);
@@ -262,7 +261,7 @@ const createNewItems = asyncHandler(async (req, res) => {
     }
 
     // Create and store the new item 
-    const note = await Assets.create({ firm, name, BStype, category, notes, price, curPrice, USDPrice, currency, quantity, date, soldDate })
+    const note = await Assets.create({ firm, name, BStype, category, notes, price, USDPrice, currency, quantity, date, soldDate })
 
     if (note) { // Created 
         return res.status(201).json({ message: 'New item created' })
@@ -284,7 +283,6 @@ const updateItems = asyncHandler(async (req, res) => {
     const category = req.body.category;
     const notes = req.body.notes;
     const price = Number(req.body.price);
-    const curPrice = Number(req.body.curPrice);
     const USDPrice = Number(req.body.USDPrice);
     const currency = req.body.currency;
     const quantity = Number(req.body.quantity);
@@ -311,11 +309,9 @@ const updateItems = asyncHandler(async (req, res) => {
     if (req.body?.category) item.category = req.body.category
     if (req.body?.notes) item.notes = req.body.notes
     if (req.body?.price) item.price = req.body.price
-    if (req.body?.curPrice) item.curPrice = req.body.curPrice
     if (req.body?.USDPrice) item.USDPrice = req.body.USDPrice
     if (req.body?.currency) item.currency = req.body.currency
     if (req.body?.quantity) item.quantity = req.body.quantity
-    if (req.body?.USDPrice) item.USDPrice = req.body.USDPrice
     if (req.body?.date) item.date = req.body.date
     item.BStype = BStype
 
