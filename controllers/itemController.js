@@ -256,7 +256,7 @@ const createNewItems = asyncHandler(async (req, res) => {
     }
 
     // Confirm data
-    if (!category || !name || !price || !quantity || !USDPrice) {
+    if (!category || !name || !price || !quantity) {
         return res.status(400).json({ message: 'Some fields are required' })
     }
 
