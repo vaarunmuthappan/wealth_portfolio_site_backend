@@ -95,15 +95,9 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
     // added firm
-    const { firstName, lastName, username, roles, active, password, firm, role } = req.body
+    const { firstName, lastName, username, active, password, firm, role } = req.body
 
     const ID = new mongoose.Types.ObjectId(req.body.id)
-
-
-    // Confirm data 
-    if (!Array.isArray(roles)) {
-        return res.status(400).json({ message: 'Roles must be array.' })
-    }
 
     // Does the user exist to update?
     const user = await User.findById(ID).exec()
@@ -115,7 +109,6 @@ const updateUser = asyncHandler(async (req, res) => {
     user.username = username
     user.firstName = firstName
     user.lastName = lastName
-    user.roles = roles
     user.role = role
     user.active = active
     user.firm = firm
