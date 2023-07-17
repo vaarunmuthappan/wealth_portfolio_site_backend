@@ -394,6 +394,7 @@ module.exports = {
     updateItems,
     deleteItems,
     getChartItems,
+    getEquityItems,
     getTableItems,
     getDashTableItems,
     getSingleItem,
