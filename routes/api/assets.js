@@ -8,6 +8,9 @@ router.route('/breakdown/:firm')
 router.route('/all/:userID')
     .get(itemController.getTableItems)
 
+router.route('/all/equities/:userID')
+    .get(itemController.getEquityItems)
+
 router.route('/unformatAll/:userID')
     .get(itemController.getDashTableItems)
 
