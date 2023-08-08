@@ -137,7 +137,7 @@ const getEquityItems = asyncHandler(async (req, res) => {
 
         const firm = currentUser.firm
         // sort should look like this: { "field": "userId", "sort": "desc"}
-        const { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
+        const { page = 0, pageSize = 20, sort = { "field": "name", "sort": "desc" }, search = "" } = req.query;
 
         // formatted sort should look like { userId: -1 }
         const generateSort = () => {
@@ -188,7 +188,7 @@ const getTableItems = asyncHandler(async (req, res) => {
 
         const firm = currentUser.firm
         // sort should look like this: { "field": "userId", "sort": "desc"}
-        const { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
+        const { page = 0, pageSize = 20, sort = null, search = "" } = req.query;
 
         // formatted sort should look like { userId: -1 }
         const generateSort = () => {
